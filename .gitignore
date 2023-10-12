@@ -1,0 +1,19 @@
+.idea/
+node_modules/
+.DS_Store
+dist/
+ts/
+packages/icons/docs/
+.cache
+coverage
+*.tgz
+
+# yarn specific
+# see https://yarnpkg.com/getting-started/qa#which-files-should-be-gitignored
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
