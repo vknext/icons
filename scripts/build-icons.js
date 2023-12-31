@@ -3,5 +3,5 @@ const { generateIcons } = require('@vkontakte/icons-scripts');
 generateIcons({
   srcDirectory: './src',
   distDirectory: './dist',
-  extraCategories: ['Unsorted', '100', '106'],
+  extraCategories: ['100', '106', '120', '126', 'Unsorted'],
 });
