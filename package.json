@@ -3,10 +3,6 @@
   "version": "1.23.0",
   "license": "UNLICENSED",
   "homepage": "https://vknext.github.io/icons/",
-  "files": [
-    "dist",
-    "src/svg"
-  ],
   "main": "dist/index.js",
   "module": "dist/es6/index.js",
   "typings": "dist/typings/index.d.ts",
