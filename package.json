@@ -1,6 +1,6 @@
 {
   "name": "@vknext/icons",
-  "version": "1.28.0",
+  "version": "1.29.0",
   "license": "UNLICENSED",
   "homepage": "https://vknext.github.io/icons/",
   "main": "dist/index.js",
