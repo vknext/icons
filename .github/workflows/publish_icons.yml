@@ -44,6 +44,8 @@ jobs:
                   cache: "yarn"
                   always-auth: true
                   registry-url: "https://registry.npmjs.org"
+                  scope: "@vknext"
+                  auth-token: ${{ secrets.NPMJS_PUBLISH_TOKEN }}
 
             - run: YARN_ENABLE_SCRIPTS=false yarn install --immutable
 
@@ -84,10 +86,8 @@ jobs:
                   branch: ${{ github.ref_name }}
                   tags: true
 
-            - name: Setup NPM Auth Token to .npmrc
-              env:
-                  NODE_AUTH_TOKEN: ${{ secrets.NPMJS_PUBLISH_TOKEN }}
-              run: echo "//registry.npmjs.org/:_authToken=$NODE_AUTH_TOKEN" > ~/.npmrc
+            - name: Verify npm authentication
+              run: npm whoami
 
             - name: Publishing tagged release
               if: ${{ github.event.inputs.tag }}
