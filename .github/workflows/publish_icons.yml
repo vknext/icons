@@ -29,16 +29,20 @@ run-name: Publish @vknext/icons ${{ inputs.custom_version }} ${{ inputs.type }} 
 jobs:
     publish:
         runs-on: ubuntu-latest
-        permissions:
-            id-token: write
 
         steps:
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@v3
               with:
-                  token: ${{ secrets.DEVTOOLS_GITHUB_TOKEN }}
+                  token: ${{ secrets.GITHUB_TOKEN }}
 
-            - name: Node setup
-              uses: ./.github/actions/node-setup-auth
+            - uses: actions/setup-node@v3
+              with:
+                  node-version: 18
+                  cache: "yarn"
+                  always-auth: true
+                  registry-url: "https://registry.npmjs.org"
+
+            - run: YARN_ENABLE_SCRIPTS=false yarn install --immutable
 
             - name: Build @vknext/icons
               run: yarn icons-build
@@ -50,7 +54,7 @@ jobs:
 
             - name: Saving current version to env
               id: prev_version
-              run: echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
+              run: echo "version=$(yarn node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
 
             - name: Bumping @vknext/icons version via version type
               if: ${{ !github.event.inputs.custom_version }}
@@ -65,7 +69,7 @@ jobs:
             - name: Saving updated version to env
               id: updated_version
               run: |
-                  echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
+                  echo "version=$(yarn node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
 
             - name: Adding commit and tag with updated version number
               run: |
@@ -76,7 +80,7 @@ jobs:
             - name: Pushing changes
               uses: ad-m/github-push-action@master
               with:
-                  github_token: ${{ secrets.DEVTOOLS_GITHUB_TOKEN }}
+                  github_token: ${{ secrets.GITHUB_TOKEN }}
                   branch: ${{ github.ref }}
                   tags: true
 
@@ -104,7 +108,7 @@ jobs:
             - name: Publishing doc
               uses: JamesIves/github-pages-deploy-action@v4
               with:
-                  token: ${{ secrets.DEVTOOLS_GITHUB_TOKEN }}
+                  token: ${{ secrets.GITHUB_TOKEN }}
                   branch: gh-pages
                   folder: docs
                   clean: false
