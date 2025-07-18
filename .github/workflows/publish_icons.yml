@@ -54,7 +54,7 @@ jobs:
 
             - name: Saving current version to env
               id: prev_version
-              run: echo "version=$(yarn node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
+              run: echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
 
             - name: Bumping @vknext/icons version via version type
               if: ${{ !github.event.inputs.custom_version }}
@@ -69,7 +69,7 @@ jobs:
             - name: Saving updated version to env
               id: updated_version
               run: |
-                  echo "version=$(yarn node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
+                  echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
 
             - name: Adding commit and tag with updated version number
               run: |
