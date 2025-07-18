@@ -29,6 +29,8 @@ run-name: Publish @vknext/icons ${{ inputs.custom_version }} ${{ inputs.type }} 
 jobs:
     publish:
         runs-on: ubuntu-latest
+        permissions:
+            id-token: write
 
         steps:
             - uses: actions/checkout@v4
