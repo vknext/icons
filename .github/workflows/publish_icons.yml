@@ -91,12 +91,12 @@ jobs:
             - name: Publishing tagged release
               if: ${{ github.event.inputs.tag }}
               run: |
-                  npm publish --tag ${{ github.event.inputs.tag }}
+                  yarn npm publish --tag ${{ github.event.inputs.tag }}
 
             - name: Publishing release
               if: ${{ !github.event.inputs.tag }}
               run: |
-                  npm publish
+                  yarn npm publish
 
             - name: Creating doc
               run: yarn docs
