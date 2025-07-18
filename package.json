@@ -1,6 +1,6 @@
 {
 	"name": "@vknext/icons",
-	"version": "2.3.0",
+	"version": "2.4.0",
 	"description": "SVG icons, provided as a React components. With love from VK Next team.",
 	"homepage": "https://vknext.github.io/icons/",
 	"repository": {
