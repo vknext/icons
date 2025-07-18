@@ -68,13 +68,12 @@ jobs:
 
             - name: Saving updated version to env
               id: updated_version
-              run: |
-                  echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
+              run: echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
 
             - name: Adding commit and tag with updated version number
               run: |
                   git add -A
-                  git commit -m 'bump(@vknext/icons): from ${{ steps.prev_version.outputs.version }} to ${{ steps.updated_version.outputs.version }}'
+                  git commit -m "bump(@vknext/icons): from ${{ steps.prev_version.outputs.version }} to ${{ steps.updated_version.outputs.version }}"
                   git tag @vknext/icons@${{ steps.updated_version.outputs.version }}
 
             - name: Pushing changes
@@ -84,23 +83,18 @@ jobs:
                   branch: ${{ github.ref }}
                   tags: true
 
-            - name: Setup NPM Auth Token to .yarnrc.yml
+            - name: Setup NPM Auth Token to .npmrc
               env:
                   NODE_AUTH_TOKEN: ${{ secrets.NPMJS_PUBLISH_TOKEN }}
-              shell: bash
-              run: |
-                  yarn config set npmAlwaysAuth true
-                  yarn config set npmAuthToken $NODE_AUTH_TOKEN
+              run: echo "//registry.npmjs.org/:_authToken=$NODE_AUTH_TOKEN" > ~/.npmrc
 
             - name: Publishing tagged release
               if: ${{ github.event.inputs.tag }}
-              run: |
-                  yarn npm publish --tag ${{ github.event.inputs.tag }}
+              run: npm publish --tag ${{ github.event.inputs.tag }}
 
             - name: Publishing release
               if: ${{ !github.event.inputs.tag }}
-              run: |
-                  yarn npm publish
+              run: npm publish
 
             - name: Creating doc
               run: yarn docs
