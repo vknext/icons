@@ -1,35 +1,8 @@
-name: "Publish icons"
-
-on:
-    workflow_dispatch:
-        inputs:
-            type:
-                description: "icons version type. Choose empty option if using custom version"
-                type: choice
-                default: "minor"
-                options:
-                    - patch
-                    - minor
-                    - major
-                    - prerelease
-                    - prepatch
-                    - preminor
-                    - premajor
-                    - ~
-                required: true
-            custom_version:
-                description: 'custom version: x.y.z-preid.a (without "v"). Overrides version type'
-                required: false
-            tag:
-                description: 'prerelease tag: preid ("alpha" or "beta"). Leave empty for release'
-                required: false
-
-run-name: Publish @vknext/icons ${{ inputs.custom_version }} ${{ inputs.type }} ${{ inputs.tag }}
-
 jobs:
     publish:
         runs-on: ubuntu-latest
         permissions:
+            contents: write
             id-token: write
 
         steps:
@@ -60,13 +33,11 @@ jobs:
 
             - name: Bumping @vknext/icons version via version type
               if: ${{ !github.event.inputs.custom_version }}
-              run: |
-                  yarn run g:npm:version ${{ github.event.inputs.type }} --preid ${{ github.event.inputs.tag }}
+              run: yarn run g:npm:version ${{ github.event.inputs.type }} --preid ${{ github.event.inputs.tag }}
 
             - name: Bumping @vknext/icons version via custom version
               if: ${{ github.event.inputs.custom_version }}
-              run: |
-                  yarn run g:npm:version ${{ github.event.inputs.custom_version }} --preid ${{ github.event.inputs.tag }}
+              run: yarn run g:npm:version ${{ github.event.inputs.custom_version }} --preid ${{ github.event.inputs.tag }}
 
             - name: Saving updated version to env
               id: updated_version
@@ -82,7 +53,7 @@ jobs:
               uses: ad-m/github-push-action@master
               with:
                   github_token: ${{ secrets.DEVTOOLS_GITHUB_TOKEN }}
-                  branch: ${{ github.ref }}
+                  branch: ${{ github.ref_name }}
                   tags: true
 
             - name: Setup NPM Auth Token to .npmrc
@@ -92,11 +63,11 @@ jobs:
 
             - name: Publishing tagged release
               if: ${{ github.event.inputs.tag }}
-              run: npm publish --tag ${{ github.event.inputs.tag }}
+              run: npm publish --tag ${{ github.event.inputs.tag }} --access public --provenance=false
 
             - name: Publishing release
               if: ${{ !github.event.inputs.tag }}
-              run: npm publish
+              run: npm publish --access public --provenance=false
 
             - name: Creating doc
               run: yarn docs
