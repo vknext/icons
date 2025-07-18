@@ -1,29 +1,31 @@
-const webpack = require('webpack');
-const webpackConfig = require('./webpack.config-docs');
-const rimraf = require('rimraf');
-const path = require('path');
+import * as fs from "node:fs";
+import * as path from "node:path";
+import { rspack } from "@rspack/core";
+import rspackConfig from "./rspack.config-docs.js";
 
-console.log('creating doc');
+console.log("creating doc");
 
-const directory = path.join(process.cwd(), 'docs');
-rimraf.sync(`${directory}/*`);
+fs.rmSync(path.join(process.cwd(), "docs"), {
+	force: true,
+	recursive: true,
+});
 
-const compiler = webpack(webpackConfig);
+const compiler = rspack(rspackConfig);
 
 compiler.run((err, stats) => {
-  if (err) {
-    console.error(err);
-    process.exit(1);
-  }
+	if (err) {
+		console.error(err);
+		process.exit(1);
+	}
 
-  console.log(
-    stats.toString({
-      colors: true,
-      children: false,
-      modules: false,
-      version: false,
-      chunks: false,
-      warnings: false,
-    }),
-  );
+	console.log(
+		stats.toString({
+			colors: true,
+			children: false,
+			modules: false,
+			version: false,
+			chunks: false,
+			warnings: false,
+		}),
+	);
 });

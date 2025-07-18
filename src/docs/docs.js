@@ -1,8 +1,9 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
+import * as React from 'react';
+import { createRoot } from 'react-dom/client';
+import { aliases } from './aliases.js';
 import { HuePicker as Hue } from 'react-color';
 import './docs.css';
-import * as allIcons from '../../dist/es6';
+import * as allIcons from '../../dist/index.js';
 
 const Icons = {};
 
@@ -36,6 +37,7 @@ class Docs extends React.PureComponent {
       anchorSize,
       anchorName,
       search: '',
+      exactMatchSearch: false,
     };
   }
 
@@ -43,13 +45,15 @@ class Docs extends React.PureComponent {
 
   onSearchChange = (e) => this.setState({ search: e.target.value });
 
+  onSearchModeChange = (e) => this.setState({ exactMatchSearch: e.target.checked });
+
   onTextareaChange = () => this.setState({ selectedIcon: null });
 
   onIconClick = (e) => {
     const { name, size, component } = e.currentTarget.dataset;
     this.setState(
       {
-        selectedIcon: `import { ${component} } from '@vknext/icons';`,
+        selectedIcon: component,
         anchorSize: size,
         anchorName: name,
       },
@@ -107,7 +111,7 @@ class Docs extends React.PureComponent {
           <div className="color-picker">
             <Hue
               color={this.state.currentColor}
-              onChangeComplete={this.onCurrentColorChange}
+              onChange={this.onCurrentColorChange}
               width="100%"
             />
           </div>
@@ -121,12 +125,28 @@ class Docs extends React.PureComponent {
             value={this.state.search}
           />
         </h2>
+        <h2>
+          <input
+            type="checkbox"
+            id="search-mode"
+            onChange={this.onSearchModeChange}
+            checked={this.state.exactMatchSearch}
+          />
+          <label htmlFor="search-mode">Точное совпадение</label>
+        </h2>
         {Object.keys(Icons).map((size) => (
           <div key={size} className="size">
             <h3>{size}</h3>
             <div className="icons" style={{ color: this.state.currentColor }}>
               {Object.keys(Icons[size])
-                .filter((iconName) => iconName.indexOf(this.state.search) > -1)
+                .filter(
+                  (iconName) =>
+                    iconName.indexOf(this.state.search) > -1 ||
+                    (!this.state.exactMatchSearch &&
+                      aliases[iconName.replace('_outline', '')]?.findIndex((alias) =>
+                        alias.includes(this.state.search),
+                      ) > -1),
+                )
                 .map((iconName) => {
                   const { Icon, componentName } = Icons[size][iconName];
                   return (
@@ -163,4 +183,5 @@ class Docs extends React.PureComponent {
   }
 }
 
-ReactDOM.render(<Docs />, document.getElementById('root'));
+const root = createRoot(document.getElementById('root'));
+root.render(<Docs />);
